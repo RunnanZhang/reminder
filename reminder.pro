@@ -22,5 +22,4 @@ HEADERS  += reminder.h \
 FORMS    += reminder.ui \
     timeout.ui
 
-RESOURCES += \
-    tray.qrc
+RESOURCES +=

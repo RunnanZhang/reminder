@@ -3,7 +3,6 @@
 
 int main(int argc, char *argv[])
 {
-    Q_INIT_RESOURCE(tray);
     QApplication a(argc, argv);
     if (!QSystemTrayIcon::isSystemTrayAvailable())
     {

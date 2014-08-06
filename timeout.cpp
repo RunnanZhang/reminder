@@ -6,6 +6,7 @@ TimeOut::TimeOut(QWidget *parent) :
     ui(new Ui::TimeOut)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
 }
 
 TimeOut::~TimeOut()

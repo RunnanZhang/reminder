@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QAction>
 #include <QMenu>
+#include <QCloseEvent>
 
 Reminder::Reminder(QWidget *parent) :
     QMainWindow(parent),
@@ -17,7 +18,9 @@ Reminder::Reminder(QWidget *parent) :
     ui->setupUi(this);
     ui->dateTimeEdit->setCalendarPopup(true);
     ui->hourSpin->setSuffix(" Hours");
+    ui->hourSpin->setSingleStep(1.0);
 
+    //有文件信息则读取，没有则初始化
     QFile file("data.dat");
     if(file.open(QIODevice::ReadOnly))
     {
@@ -40,22 +43,25 @@ Reminder::Reminder(QWidget *parent) :
     m_timer->start(1000);
 
     //托盘图标
-    QSystemTrayIcon* trayIcon = new QSystemTrayIcon(this);
+    m_trayIcon = new QSystemTrayIcon(this);
+    QObject::connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+               this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 
     QAction* quitAction = new QAction(tr("&Quit"), this);
-    QAction* restoreAction = new QAction(tr("&Show"), this);
-    QObject::connect(restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+    QAction* showAction = new QAction(tr("&Show"), this);
+    QObject::connect(showAction, SIGNAL(triggered()), this, SLOT(showNormal()));
     QObject::connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
     QMenu* trayIconMenu = new QMenu(this);
-    trayIconMenu->addAction(restoreAction);
+    trayIconMenu->addAction(showAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
-    trayIcon->setContextMenu(trayIconMenu);
-    QIcon *icon = new QIcon(":/images/heart.svg");
-    trayIcon->setIcon(*icon);
-    setWindowIcon(*icon);
-    trayIcon->show();
+    m_trayIcon->setContextMenu(trayIconMenu);
+    QIcon icon("./images/heart.svg");
+    m_trayIcon->setIcon(icon);
+    setWindowIcon(icon);
+    m_trayIcon->setToolTip("联合站设备维护保养提示器");
+    m_trayIcon->show();
 }
 
 Reminder::~Reminder()
@@ -65,9 +71,7 @@ Reminder::~Reminder()
 
 void Reminder::checkTime()
 {
-    QDateTime dateTime = m_Time.addSecs(qint64(m_Hours));
-    qWarning("now:%d", QDateTime::currentDateTime().toTime_t());
-    qWarning("target:%d", dateTime.toTime_t());
+    QDateTime dateTime = m_Time.addSecs(qint64(m_Hours*3600));
     if(dateTime.toTime_t() == QDateTime::currentDateTime().toTime_t())
     {
         m_timer->stop();
@@ -76,9 +80,11 @@ void Reminder::checkTime()
         m_TimeOutWidget->setName(m_Name);
         m_TimeOutWidget->setLCD(dateTime);
         m_TimeOutWidget->setReminder(m_Reminder);
-        m_TimeOutWidget->setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
         m_TimeOutWidget->show();
     }
+    ui->lcdNumber->setDigitCount(9);
+    ui->lcdNumber->display(QString::number(QDateTime::currentDateTime().secsTo(dateTime)));
+    ui->lcdNumber->setSegmentStyle(QLCDNumber::Flat);
 }
 
 void Reminder::on_applyBtn_clicked()
@@ -102,5 +108,23 @@ void Reminder::on_applyBtn_clicked()
     if(!m_timer->isActive())
     {
         m_timer->start(1000);
+    }
+}
+
+void Reminder::closeEvent(QCloseEvent * event)
+{
+    if (m_trayIcon->isVisible())
+    {
+        m_trayIcon->showMessage(tr("提示"), tr("程序已最小化至托盘处"));
+        hide();
+        event->ignore();
+    }
+}
+
+void Reminder::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    if(reason == QSystemTrayIcon::DoubleClick)
+    {
+        showNormal();
     }
 }

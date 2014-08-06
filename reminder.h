@@ -22,13 +22,18 @@ public:
 private Q_SLOTS:
     void on_applyBtn_clicked();
     void checkTime();
+    void iconActivated(QSystemTrayIcon::ActivationReason);
+
+protected:
+    virtual void closeEvent(QCloseEvent * event);
 
 private:
     Ui::Reminder *ui;
     TimeOut* m_TimeOutWidget;
+    QSystemTrayIcon* m_trayIcon;
     QTimer* m_timer;
     QDateTime m_Time;
-    qint64 m_Hours;
+    double m_Hours;
     QString m_Name;
     QString m_Reminder;
 };
