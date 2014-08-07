@@ -57,7 +57,7 @@ Reminder::Reminder(QWidget *parent) :
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
     m_trayIcon->setContextMenu(trayIconMenu);
-    QIcon icon("./images/heart.svg");
+    QIcon icon(":/images/heart.svg");
     m_trayIcon->setIcon(icon);
     setWindowIcon(icon);
     m_trayIcon->setToolTip("联合站设备维护保养提示器");
