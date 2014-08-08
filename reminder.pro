@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         reminder.cpp \
-    timeout.cpp
+    timeout.cpp \
+    listmodel.cpp
 
 HEADERS  += reminder.h \
-    timeout.h
+    timeout.h \
+    listmodel.h
 
 FORMS    += reminder.ui \
     timeout.ui
