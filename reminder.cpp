@@ -81,6 +81,7 @@ void Reminder::checkTime()
         m_TimeOutWidget->setLCD(dateTime);
         m_TimeOutWidget->setReminder(m_Reminder);
         m_TimeOutWidget->show();
+        QApplication::alert(this);
     }
     ui->lcdNumber->setDigitCount(9);
     ui->lcdNumber->display(QString::number(QDateTime::currentDateTime().secsTo(dateTime)));
