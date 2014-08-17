@@ -24,5 +24,7 @@ HEADERS  += reminder.h \
 FORMS    += reminder.ui \
     timeout.ui
 
-RESOURCES += \
-    tray.qrc
+RESOURCES += tray.qrc
+
+macx: ICON = images/app.icns
+win32: RC_FILE = resources/windowsIcon.rc
