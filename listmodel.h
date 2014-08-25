@@ -1,19 +1,18 @@
 #include <QAbstractListModel>
+#include <QDateTime>
 
-class RSColorBar
+class ModelData
 {
 public:
-	RSColorBar(int value, QString name)
-	{
-		m_Name = name;
-		m_Value = value;
-	}
-	inline QString getName(){return m_Name;}
-	inline void setName(QString name){m_Name = name;}
-private:
-	int m_Value;
-	QString m_Name;
+    QDateTime dateTime;
+    double hours;
+    QString name;
+    QString reminder;
+    QString infomation;
+    friend QDataStream &operator<<(QDataStream &out, const ModelData &myObj);
+    friend QDataStream &operator>>(QDataStream &in, ModelData &myObj);
 };
+Q_DECLARE_METATYPE(ModelData)
 
 class Listmodel : public QAbstractListModel
 {

@@ -1,6 +1,21 @@
 #include "listmodel.h"
 #include <QColor>
 #include <QBrush>
+
+friend QDataStream &operator<<(QDataStream &out, const ModelData &myObj)
+{
+    out << myObj.dateTime << myObj.hours <<
+           myObj.name << myObj.reminder << myObj.infomation;
+    return out;
+}
+
+friend QDataStream &operator>>(QDataStream &in, ModelData &myObj)
+{
+    in >> myObj.dateTime >> myObj.hours >>
+           myObj.name >> myObj.reminder >> myObj.infomation;
+    return in;
+}
+
 Listmodel::Listmodel(const int column, QObject * parent) : QAbstractListModel(parent)
 {
 	for (int i = 0; i < column; ++i)
@@ -31,7 +46,7 @@ QVariant Listmodel::data(const QModelIndex &idx, int role) const
 {
 	if (role == Qt::UserRole)
 	{
- 		return QVariant(uint(m_list[idx.row()]));
+        //return QVariant(uint(m_list[idx.row()]));
 	}
 	else if (role == Qt::DisplayRole)
 	{
