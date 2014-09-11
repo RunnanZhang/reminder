@@ -21,11 +21,13 @@ public:
 
 private Q_SLOTS:
     void on_applyBtn_clicked();
+    void on_addBtn_clicked();
     void checkTime();
     void iconActivated(QSystemTrayIcon::ActivationReason);
 
 protected:
     virtual void closeEvent(QCloseEvent * event);
+    virtual void currentChanged(const QModelIndex & current, const QModelIndex & previous);
 
 private:
     Ui::Reminder *ui;

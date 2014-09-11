@@ -2,14 +2,14 @@
 #include <QColor>
 #include <QBrush>
 
-friend QDataStream &operator<<(QDataStream &out, const ModelData &myObj)
+QDataStream &operator<<(QDataStream &out, const ModelData &myObj)
 {
     out << myObj.dateTime << myObj.hours <<
            myObj.name << myObj.reminder << myObj.infomation;
     return out;
 }
 
-friend QDataStream &operator>>(QDataStream &in, ModelData &myObj)
+QDataStream &operator>>(QDataStream &in, ModelData &myObj)
 {
     in >> myObj.dateTime >> myObj.hours >>
            myObj.name >> myObj.reminder >> myObj.infomation;
@@ -33,7 +33,7 @@ int Listmodel::rowCount(const QModelIndex &) const
 	return m_list.count();
 }
 
-Qt::ItemFlags Listmodel::flags(const QModelIndex &index) const
+Qt::ItemFlags Listmodel::flags(const QModelIndex &) const
 {
 	Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 	return flags;
@@ -43,7 +43,9 @@ QVariant Listmodel::data(const QModelIndex &idx, int role) const
 {
 	if (role == Qt::UserRole)
 	{
-        return QVariant(m_list[idx.row()]);
+        QVariant var;
+        var.setValue(m_list[idx.row()]);
+        return var;
 	}
 	else if (role == Qt::DisplayRole)
 	{
@@ -68,7 +70,7 @@ bool Listmodel::setData(const QModelIndex &index, const QVariant &value, int rol
 	return true;
 }
 
-bool Listmodel::insertRow (int row, const QModelIndex &parent)
+bool Listmodel::insertRow(int row, const QModelIndex &parent)
 {
     m_list.append(ModelData());
 	return QAbstractListModel::insertRow(row,parent);
