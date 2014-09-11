@@ -10,10 +10,7 @@
 
 Reminder::Reminder(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::Reminder),
-    m_Hours(0),
-    m_Name(QString()),
-    m_Reminder(QString())
+    ui(new Ui::Reminder)
 {
     ui->setupUi(this);
     ui->dateTimeEdit->setCalendarPopup(true);
@@ -26,12 +23,12 @@ Reminder::Reminder(QWidget *parent) :
     {
         ui->dateTimeEdit->setDate(QDate::currentDate());
         QDataStream in(&file);
-        in >> m_Name >> m_Time >> m_Hours >> m_Reminder;
+        //in >> m_Name >> m_Time >> m_Hours >> m_Reminder;
         file.close();
     }
     else
     {
-        m_Time = QDateTime::currentDateTime();
+        model = new Listmodel(0, this);
     }
     ui->nameEdit->setText(m_Name);
     ui->dateTimeEdit->setDateTime(m_Time);

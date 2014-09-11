@@ -1,7 +1,7 @@
 #ifndef REMINDER_H
 #define REMINDER_H
 
-#include <listmodel.h>
+#include "listmodel.h"
 #include "timeout.h"
 #include <QMainWindow>
 #include <QTimer>
@@ -32,6 +32,7 @@ private:
     TimeOut* m_TimeOutWidget;
     QSystemTrayIcon* m_trayIcon;
     QTimer* m_timer;
+    Listmodel* model;
 };
 
 #endif // REMINDER_H

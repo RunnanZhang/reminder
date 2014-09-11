@@ -18,7 +18,7 @@ class Listmodel : public QAbstractListModel
 {
 	Q_OBJECT
 public:
-	explicit Listmodel(const int column = 0, QObject * parent = 0);
+    explicit Listmodel(const int row = 0, QObject * parent = 0);
 	~Listmodel();
 	virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -27,6 +27,6 @@ public:
 	bool insertRow (int row, const QModelIndex &parent = QModelIndex());
 
 private:
-	QList<RSColorBar*> m_list;
+    QList<ModelData> m_list;
 	
 };
