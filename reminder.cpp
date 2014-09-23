@@ -17,23 +17,19 @@ Reminder::Reminder(QWidget *parent) :
     ui->hourSpin->setSuffix(" Hours");
     ui->hourSpin->setSingleStep(1.0);
 
-    //有文件信息则读取，没有则初始化空的model
+    //有文件信息则读取，没有则初始化
     QFile file("data.dat");
     if(file.open(QIODevice::ReadOnly))
     {
         ui->dateTimeEdit->setDate(QDate::currentDate());
-        QList<ModelData> list;
         QDataStream in(&file);
-        in >> list;
-        file.close();
-        int count = list.count();
-        model = new Listmodel(count, this);
-        QVariant var;
-        for(int i = 0; i < count; ++i)
-        {
-            var.setValue(list[i]);
-            model->setData(model->index(i), var, Qt::UserRole);
-        }
+        //in >> m_Name >> m_Time >> m_Hours >> m_Reminder;
+        file.close();model = new Listmodel(2, this);
+        model->setData(model->index(0), QVariant("qq"), Qt::DisplayRole);
+        model->setData(model->index(1), QVariant("qqq"), Qt::DisplayRole);
+        bool b = model->insertRow(3);
+
+        //model->setData(model->index(2), QVariant("qqqq"), Qt::DisplayRole);
     }
     else
     {
@@ -41,10 +37,7 @@ Reminder::Reminder(QWidget *parent) :
     }
     ui->listView->setModel(model);
     ui->listView->setSelectionMode(QAbstractItemView::SingleSelection);
-    QObject::connect(ui->listView, SIGNAL(doubleClicked(const QModelIndex&)),
-                     this, SLOT(viewClicked(const QModelIndex &)));
-    QObject::connect(ui->listView, SIGNAL(clicked(const QModelIndex&)),
-                     this, SLOT(viewClicked(const QModelIndex &)));
+
 
     m_timer = new QTimer(this);
     QObject::connect(m_timer, SIGNAL(timeout()), this, SLOT(checkTime()));
@@ -59,6 +52,7 @@ Reminder::Reminder(QWidget *parent) :
     QAction* showAction = new QAction(tr("&Show"), this);
     QObject::connect(showAction, SIGNAL(triggered()), this, SLOT(showNormal()));
     QObject::connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+
     QMenu* trayIconMenu = new QMenu(this);
     trayIconMenu->addAction(showAction);
     trayIconMenu->addSeparator();
@@ -73,95 +67,69 @@ Reminder::Reminder(QWidget *parent) :
 
 Reminder::~Reminder()
 {
-    writeModelInfo();
     delete ui;
-}
-
-void Reminder::writeModelInfo()
-{
-    QFile file("data.dat");
-    file.open(QIODevice::WriteOnly);
-    QDataStream out(&file);
-    out << model->m_list;
-    file.close();
 }
 
 void Reminder::on_addBtn_clicked()
 {
-    int count = model->rowCount();
-    model->insertRow(count);
-}
-
-void Reminder::on_delBtn_clicked()
-{
-    if(ui->listView->currentIndex().isValid())
-    {
-        int row = ui->listView->currentIndex().row();
-        model->removeRow(row);
-    }
+    bool b = model->insertRow(2);
+    int a = model->rowCount();
+    model->setData(model->index(model->rowCount()-1), QVariant("qqqwwq"), Qt::DisplayRole);
 }
 
 void Reminder::checkTime()
 {
-    int count = model->rowCount();
-    if(count <= 0)
-    {
-        return;
-    }
-    QDateTime dateTime;
-    ModelData data;
-    QVariant var = QVariant();
-    for(int i = 0; i < count; ++i)
-    {
-        var = model->data(model->index(i), Qt::UserRole);
-        data = var.value<ModelData>();
-        dateTime = data.dateTime.addSecs(qint64(data.hours*3600));
-        if(dateTime.toTime_t() == QDateTime::currentDateTime().toTime_t())
-        {
-            m_TimeOutWidget = new TimeOut();
-            m_TimeOutWidget->setAttribute(Qt::WA_DeleteOnClose);
-            m_TimeOutWidget->setName(data.name);
-            m_TimeOutWidget->setLCD(data.dateTime);
-            m_TimeOutWidget->setReminder(data.reminder);
-            m_TimeOutWidget->setInfo(data.infomation);
-            m_TimeOutWidget->show();
-            QApplication::alert(this);
-        }
-    }
-    if(!ui->listView->currentIndex().isValid())
-    {
-        return;
-    }
-    var = model->data(ui->listView->currentIndex(), Qt::UserRole);
-    data = var.value<ModelData>();
-    dateTime = data.dateTime.addSecs(qint64(data.hours*3600));
-    ui->lcdNumber->setDigitCount(9);
-    ui->lcdNumber->display(QString::number(QDateTime::currentDateTime().secsTo(dateTime)));
-    ui->lcdNumber->setSegmentStyle(QLCDNumber::Flat);
+//    QDateTime dateTime = m_Time.addSecs(qint64(m_Hours*3600));
+//    if(dateTime.toTime_t() == QDateTime::currentDateTime().toTime_t())
+//    {
+//        m_timer->stop();
+//        m_TimeOutWidget = new TimeOut();
+//        m_TimeOutWidget->setAttribute(Qt::WA_DeleteOnClose);
+//        m_TimeOutWidget->setName(m_Name);
+//        m_TimeOutWidget->setLCD(dateTime);
+//        m_TimeOutWidget->setReminder(m_Reminder);
+//        m_TimeOutWidget->show();
+//        QApplication::alert(this);
+//    }
+//    ui->lcdNumber->setDigitCount(9);
+//    ui->lcdNumber->display(QString::number(QDateTime::currentDateTime().secsTo(dateTime)));
+//    ui->lcdNumber->setSegmentStyle(QLCDNumber::Flat);
 }
 
 void Reminder::on_applyBtn_clicked()
 {
     QVariant var;
     ModelData currentData;
+
+//    QFile file("data.dat");
+//    file.open(QIODevice::WriteOnly);
+//    QDataStream out(&file);
+
     currentData.name = ui->nameEdit->text();
     currentData.hours = ui->hourSpin->value();
     currentData.dateTime = ui->dateTimeEdit->dateTime();
     currentData.reminder = ui->remindEdit->text();
     currentData.infomation = ui->InfoEdit->document()->toPlainText();
     var.setValue(currentData);
-    model->setData(ui->listView->currentIndex(), var, Qt::UserRole);
+    model->setData(ui->listView->currentIndex(), Qt::UserRole);
+
+
+    if(!m_timer->isActive())
+    {
+        m_timer->start(1000);
+    }
 }
 
-void Reminder::viewClicked(const QModelIndex &index)
+void Reminder::currentChanged(const QModelIndex & current, const QModelIndex & previous)
 {
-    QVariant var = model->data(index, Qt::UserRole);
+    QVariant var = model->data(current, Qt::UserRole);
     ModelData currentData = var.value<ModelData>();
     ui->nameEdit->setText(currentData.name);
     ui->hourSpin->setValue(currentData.hours);
     ui->dateTimeEdit->setDateTime(currentData.dateTime);
     ui->remindEdit->setText(currentData.reminder);
     ui->InfoEdit->setDocument(new QTextDocument(currentData.infomation));
+
 }
 
 void Reminder::closeEvent(QCloseEvent * event)

@@ -2,15 +2,6 @@
 #include <QColor>
 #include <QBrush>
 
-ModelData::ModelData()
-{
-    dateTime = QDateTime::currentDateTime().addSecs(-1);
-    name = "new device";
-    hours = 0.0;
-    reminder = QString();
-    infomation = QString();
-}
-
 QDataStream &operator<<(QDataStream &out, const ModelData &myObj)
 {
     out << myObj.dateTime << myObj.hours <<
@@ -79,21 +70,8 @@ bool Listmodel::setData(const QModelIndex &index, const QVariant &value, int rol
 	return true;
 }
 
-//只针对此程序，正常需要前两个形参，我们默认直插入一行至末尾。insertRow函数会调用此函数。
-bool Listmodel::insertRows(int , int , const QModelIndex & parent)
+bool Listmodel::insertRow(int row, const QModelIndex &parent)
 {
-    int count = m_list.count();
-    beginInsertRows(parent, count, count);
     m_list.append(ModelData());
-    endInsertRows();
-    return true;
-}
-
-//删除指定一行
-bool Listmodel::removeRows(int row, int , const QModelIndex & parent)
-{
-    beginRemoveRows(parent, row, row);
-    m_list.removeAt(row);
-    endRemoveRows();
-    return true;
+	return QAbstractListModel::insertRow(row,parent);
 }

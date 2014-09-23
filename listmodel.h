@@ -4,7 +4,6 @@
 class ModelData
 {
 public:
-    ModelData();
     QDateTime dateTime;
     double hours;
     QString name;
@@ -25,10 +24,9 @@ public:
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 	virtual QVariant data(const QModelIndex &idx, int role = Qt::DisplayRole) const;
 	virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    virtual bool insertRows(int row, int count, const QModelIndex & parent = QModelIndex());
-    virtual bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
+	bool insertRow (int row, const QModelIndex &parent = QModelIndex());
 
-public:
+private:
     QList<ModelData> m_list;
 	
 };

@@ -26,12 +26,7 @@ void TimeOut::setLCD(QDateTime time)
     ui->lcdNumber->setSegmentStyle(QLCDNumber::Flat);
 }
 
-void TimeOut::setInfo(QString str)
-{
-    ui->InfoEdit->setDocument(new QTextDocument(str));
-}
-
 void TimeOut::setReminder(QString str)
 {
-    ui->remindEdit->setText(str);
+    ui->remindEdit->setDocument(new QTextDocument(str));
 }
