@@ -18,6 +18,7 @@ public:
     void setName(QString);
     void setLCD(QDateTime);
     void setReminder(QString);
+    void setInfo(QString);
 
 private:
     Ui::TimeOut *ui;
