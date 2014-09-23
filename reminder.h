@@ -22,12 +22,17 @@ public:
 private Q_SLOTS:
     void on_applyBtn_clicked();
     void on_addBtn_clicked();
+    void on_delBtn_clicked();
     void checkTime();
     void iconActivated(QSystemTrayIcon::ActivationReason);
+    //when double clicked QListView
+    void viewClicked(const QModelIndex &index);
 
 protected:
     virtual void closeEvent(QCloseEvent * event);
-    virtual void currentChanged(const QModelIndex & current, const QModelIndex & previous);
+
+private:
+    void writeModelInfo();
 
 private:
     Ui::Reminder *ui;
