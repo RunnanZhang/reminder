@@ -16,6 +16,8 @@ Reminder::Reminder(QWidget *parent) :
     ui->dateTimeEdit->setCalendarPopup(true);
     ui->hourSpin->setSuffix(" Hours");
     ui->hourSpin->setSingleStep(1.0);
+    ui->hourSpin->setDecimals(4);
+    ui->hourSpin->setMaximum(1000000);
 
     //有文件信息则读取，没有则初始化空的model
     QFile file("data.dat");
@@ -90,6 +92,7 @@ void Reminder::on_addBtn_clicked()
 {
     int count = model->rowCount();
     model->insertRow(count);
+    ui->listView->setCurrentIndex(model->index(count));
 }
 
 void Reminder::on_delBtn_clicked()
@@ -99,6 +102,7 @@ void Reminder::on_delBtn_clicked()
         int row = ui->listView->currentIndex().row();
         model->removeRow(row);
     }
+    ui->listView->setCurrentIndex(model->index(0));
 }
 
 void Reminder::checkTime()
@@ -151,6 +155,7 @@ void Reminder::on_applyBtn_clicked()
     currentData.infomation = ui->InfoEdit->document()->toPlainText();
     var.setValue(currentData);
     model->setData(ui->listView->currentIndex(), var, Qt::UserRole);
+    ui->listView->update(ui->listView->currentIndex());
 }
 
 void Reminder::viewClicked(const QModelIndex &index)
